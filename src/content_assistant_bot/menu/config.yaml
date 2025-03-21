@@ -1,0 +1,31 @@
+strings:
+  ru:
+    main_menu:
+      title: "Главное меню"
+      options:
+        - label: "Генерация по стилю"
+          value: "generation"
+        - label: "Отредактировать ошибки"
+          value: "posts"
+        - label: "Выбор поста из сохраненных"
+          value: "posts"
+        - label: "Мои каналы"
+          value: "channels"
+        - label: "Подключение подписки"
+          value: "subscription"
+        - label: "Информация об аккаунте"
+          value: "account"
+        - label: "Помощь по боту"
+          value: "help"
+    admin_menu:
+      title: "Меню администратора"
+      options:
+        - label: "Экспорт данных"
+          value: "export_data"
+        - label: "Публичное сообщение"
+          value: "public_message"
+        - label: "Управление пользователями"
+          value: "users"
+        - label: "О приложении"
+          value: "about"
+    no_rights: "У вас нет прав администратора для доступа к этому приложению"

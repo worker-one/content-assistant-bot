@@ -1,0 +1,64 @@
+strings:
+  en:
+    # Menu strings
+    channels_menu: "📢 *Channel Management*\n\nHere you can manage your Telegram channels."
+    my_channels: "📋 My Channels"
+    add_channel: "➕ Add Channel"
+    delete_channel: "🗑️ Delete Channel"
+    back_to_menu: "🔙 Back to Main Menu"
+    back_to_channels: "🔙 Back to Channels"
+    cancel: "❌ Cancel"
+    
+    # Channel operations
+    enter_channel_name: "Please enter a name for your channel:"
+    enter_channel_link: "Please enter the link to your channel (e.g. https://t.me/yourchannel):"
+    channel_created: "✅ Channel *{name}* has been successfully added!"
+    no_channels: "You don't have any channels yet. Click 'Add Channel' to add your first channel."
+    your_channels: "📋 *Your Channels*\n\nSelect a channel to view details:"
+    channel_not_found: "❌ Channel not found."
+    
+    # Channel details
+    channel_details: "📢 *Channel Details*\n\n*Name:* {name}\n*Link:* {link}\n*Added on:* {created_at}"
+    edit_channel: "✏️ Edit Channel"
+    select_channel_to_delete: "Select a channel to delete:"
+    channel_deleted: "✅ Channel *{name}* has been successfully deleted."
+    
+    # Editing channel
+    what_to_edit: "What would you like to edit?"
+    edit_name: "✏️ Edit Name"
+    edit_link: "🔗 Edit Link"
+    enter_new_channel_name: "Please enter a new name for the channel:"
+    enter_new_channel_link: "Please enter a new link for the channel:"
+    channel_updated: "✅ Channel has been successfully updated!"
+
+  ru:
+    # Menu strings
+    channels_menu: "📢 *Управление каналами*\n\nЗдесь вы можете управлять своими Telegram-каналами."
+    my_channels: "📋 Мои каналы"
+    add_channel: "➕ Добавить канал"
+    delete_channel: "🗑️ Удалить канал"
+    back_to_menu: "🔙 Вернуться в главное меню"
+    back_to_channels: "🔙 Вернуться к каналам"
+    cancel: "❌ Отмена"
+    
+    # Channel operations
+    enter_channel_name: "Пожалуйста, введите название вашего канала:"
+    enter_channel_link: "Пожалуйста, введите ссылку на ваш канал (например, https://t.me/vashkanal):"
+    channel_created: "✅ Канал *{name}* успешно добавлен! Вам осталось добавить бота в канал в качестве администратора."
+    no_channels: "У вас пока нет каналов. Нажмите 'Добавить канал', чтобы добавить свой первый канал."
+    your_channels: "📋 *Ваши каналы*\n\nВыберите канал для просмотра деталей:"
+    channel_not_found: "❌ Канал не найден."
+    
+    # Channel details
+    channel_details: "📢 *Информация о канале*\n\n*Название:* {name}\n*Ссылка:* {link}\n*Добавлен:* {created_at}"
+    edit_channel: "✏️ Редактировать канал"
+    select_channel_to_delete: "Выберите канал для удаления:"
+    channel_deleted: "✅ Канал *{name}* успешно удален."
+    
+    # Editing channel
+    what_to_edit: "Что вы хотите отредактировать?"
+    edit_name: "✏️ Изменить название"
+    edit_link: "🔗 Изменить ссылку"
+    enter_new_channel_name: "Пожалуйста, введите новое название для канала:"
+    enter_new_channel_link: "Пожалуйста, введите новую ссылку для канала:"
+    channel_updated: "✅ Канал успешно обновлен!"

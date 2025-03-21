@@ -1,0 +1,62 @@
+strings:
+  ru:
+    # General strings
+    back: "Назад"
+    back_button: "Назад"
+    cancel: "Отмена"
+    back_to_menu: "Вернуться в главное меню"
+    success: "Успешно!"
+    error: "Произошла ошибка. Пожалуйста, попробуйте снова."
+    
+    # Menu strings
+    menu: "Главное меню"
+    main_menu: "Главное меню"
+    posts_menu: "Меню постов"
+    
+    # Posts strings
+    posts: "Посты"
+    create_post: "Создать новый пост"
+    my_posts: "Мои посты"
+    no_posts: "У вас еще нет постов. Создайте свой первый пост!"
+    post_not_found: "Пост не найден."
+    untitled_post: "Пост без названия"
+    post_published: "Опубликован"
+    post_draft: "Черновик"
+    scheduled_for: "Запланирован на"
+    
+    # Post actions
+    publish_post: "Опубликовать сейчас"
+    schedule_post: "Запланировать на потом"
+    edit_post: "Редактировать пост"
+    delete_post: "Удалить пост"
+    back_to_posts: "Вернуться к постам"
+    save_post: "Сохранить пост"
+    
+    # Edit post
+    what_to_edit: "Что бы вы хотели отредактировать?"
+    edit_title: "Изменить заголовок"
+    edit_content: "Изменить содержание"
+    enter_new_title: "Пожалуйста, введите новый заголовок для вашего поста:"
+    enter_new_content: "Пожалуйста, введите новое содержание для вашего поста:"
+    update_success: "Пост успешно обновлен!"
+    update_failed: "Не удалось обновить пост. Пожалуйста, попробуйте снова."
+    
+    # Scheduling
+    select_schedule_time: "Выберите, когда опубликовать ваш пост:"
+    today_evening: "Сегодня вечером (20:00)"
+    tomorrow_morning: "Завтра утром (9:00)"
+    tomorrow_noon: "Завтра в обед (12:00)"
+    tomorrow_evening: "Завтра вечером (20:00)"
+    custom_time: "Выбрать свое время"
+    enter_custom_time: "Пожалуйста, введите дату и время в формате ГГГГ-ММ-ДД ЧЧ:ММ"
+    invalid_date_format: "Неверный формат даты. Используйте формат ГГГГ-ММ-ДД ЧЧ:ММ"
+    post_published_success: "Пост успешно опубликован!"
+    post_published_error: "Не удалось опубликовать пост. Проверьте, что бот добавлен в канал и имеет права администратора."
+    post_scheduled_success: "Пост успешно запланирован!"
+    post_scheduled_success_for: "Пост успешно запланирован на"
+    post_scheduled_error: "Не удалось запланировать пост. Пожалуйста, попробуйте снова."
+
+    # Channel related strings
+    select_channel_for_publish: "Выберите канал для публикации поста:"
+    no_channels_available: "У вас нет каналов. Пожалуйста, добавьте канал сначала."
+    channel_not_found: "Канал не найден."

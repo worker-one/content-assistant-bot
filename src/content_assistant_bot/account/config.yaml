@@ -1,0 +1,15 @@
+strings:
+  ru:
+    account_info: |
+      ID пользователя: `{user_id}`
+      Имя пользователя: `{username}`
+      Число оставшихся постов: `{balance}`
+      Дата регистрации: `{registration_date}`
+    you_have_subscription: "У вас нет подписок."
+    subscription: |
+      Username: `{username}`
+      План: `{plan}`
+      Статус: `{status}`
+      Оставшиеся число слов: `{remaining_text_generations}`
+      Дата начала: `{start_date}`
+      Дата окончания: `{end_date}`

@@ -1,0 +1,5 @@
+strings:
+  ru:
+    no_subscription: "Для использования услуги необходимо преобрести пакет постов для генерации."
+    you_have_subscription: "У вас нет подписок."
+    payment_successful: "Оплата успешна. Вам зачислено {balance_update} постов для генерации."
