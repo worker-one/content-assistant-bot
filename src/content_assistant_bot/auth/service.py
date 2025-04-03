@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from typing import Optional
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
@@ -196,3 +197,15 @@ def upsert_user(
     finally:
         db_session.close()
     return user
+
+
+def is_new_user(db_session: Session, id: int) -> bool:
+    """Check if user is new"""
+    user = db_session.query(User).filter(User.id == id).first()
+    if not user.created_at:
+        return False
+
+    now = datetime.utcnow()
+    two_minutes_ago = now - timedelta(minutes=1)
+
+    return user.created_at >= two_minutes_ago

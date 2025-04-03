@@ -23,11 +23,10 @@ strings = config.strings
 
 
 # Style services
-def create_style(db_session: Session, name: str, description: str, examples: str, owner_id: int) -> Style:
+def create_style(db_session: Session, name: str, examples: str, owner_id: int) -> Style:
     """ Create a new style """
     style = Style(
         name=name,
-        description=description,
         examples=examples,
         owner_id=owner_id,
         created_at=datetime.now(),

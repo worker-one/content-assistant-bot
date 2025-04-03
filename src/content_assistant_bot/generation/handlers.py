@@ -1,6 +1,6 @@
 import logging
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 from omegaconf import OmegaConf
 from telebot import TeleBot, types
@@ -9,8 +9,16 @@ from telebot.states import State, StatesGroup
 from ..account import service as account_services
 from ..database.core import get_session
 from .service import (
-    create_style, read_style, read_styles_by_owner, create_post, read_post, update_post, 
-    schedule_post, publish_post, generate_with_style, edit_content
+    create_post,
+    create_style,
+    edit_content,
+    generate_with_style,
+    publish_post,
+    read_post,
+    read_style,
+    read_styles_by_owner,
+    schedule_post,
+    update_post,
 )
 
 logger = logging.getLogger(__name__)
@@ -175,23 +183,81 @@ def register_handlers(bot: TeleBot):
     def create_style_start(call: types.CallbackQuery, data: dict):
         user = data["user"]
         data["state"].set(GenerationState.style_examples)
+        data["state"].add_data(examples=[])  # Initialize empty examples list
+        
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(
+            types.InlineKeyboardButton(strings[user.lang].done, callback_data="style_examples_done"),
+            types.InlineKeyboardButton(strings[user.lang].cancel, callback_data="generation_menu")
+        )
         
         bot.edit_message_text(
             chat_id=user.id,
             message_id=call.message.message_id,
-            text=strings[user.lang].enter_style_examples,
-            reply_markup=create_cancel_button(user.lang)
+            text=strings[user.lang].enter_style_examples_multiple,
+            reply_markup=markup
         )
 
     @bot.message_handler(state=GenerationState.style_examples)
     def process_style_examples(message: types.Message, data: dict):
         user = data["user"]
-        data["state"].add_data(examples=message.text)
+        print("BLAH")
+        with data["state"].data() as state_data:
+            # Append new example to the list
+            examples = state_data.get("examples", [])
+            examples.append(message.text)
+            state_data["examples"] = examples
+        
+        # Limit to 10 examples
+        example_count = len(examples)
+        
+        if example_count >= 10:
+            # If we reached limit, proceed to next state
+            concatenated_examples = "\n\n---\n\n".join(examples)
+            state_data["examples"] = concatenated_examples
+            data["state"].set(GenerationState.style_name)
+            
+            bot.send_message(
+                user.id,
+                strings[user.lang].max_examples_reached + "\n" + strings[user.lang].enter_style_name,
+                reply_markup=create_cancel_button(user.lang)
+            )
+        else:
+            # Otherwise, allow adding more examples
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            markup.add(
+                types.InlineKeyboardButton(strings[user.lang].done, callback_data="create_style_examples_done"),
+                types.InlineKeyboardButton(strings[user.lang].cancel, callback_data="generation_menu")
+            )
+            
+            bot.send_message(
+                user.id,
+                strings[user.lang].example_added.format(count=example_count, max=10),
+                reply_markup=markup
+            )
+
+    @bot.callback_query_handler(func=lambda call: call.data == "create_style_examples_done")
+    def finalize_style_examples(call: types.CallbackQuery, data: dict):
+        user = data["user"]
+        
+        with data["state"].data() as state_data:
+            examples = state_data.get("examples", [])
+            if not examples:
+                bot.answer_callback_query(call.id, strings[user.lang].no_examples)
+                return
+            
+            print("examples", examples)
+            # Join all examples with separators
+            concatenated_examples = "\n\n---\n\n".join(examples)
+        
+        data["state"].add_data(concatenated_examples=concatenated_examples)
+        
         data["state"].set(GenerationState.style_name)
         
-        bot.send_message(
-            user.id,
-            strings[user.lang].enter_style_name,
+        bot.edit_message_text(
+            chat_id=user.id,
+            message_id=call.message.message_id,
+            text=strings[user.lang].enter_style_name,
             reply_markup=create_cancel_button(user.lang)
         )
 
@@ -199,16 +265,17 @@ def register_handlers(bot: TeleBot):
     def process_style_name(message: types.Message, data: dict):
         user = data["user"]
         data["state"].add_data(name=message.text)
-        data["state"].set(GenerationState.style_description)
 
         with data["state"].data() as state_data:
-            style = create_style(
-                db_session,
-                name=state_data["name"],
-                description=message.text,
-                examples=state_data["examples"],
-                owner_id=user.id
-            )
+            name = state_data["name"]
+            concatenated_examples = state_data["concatenated_examples"]
+            
+        style = create_style(
+            db_session,
+            name=name,
+            examples=concatenated_examples,
+            owner_id=user.id
+        )
 
         markup = create_generation_menu_markup(user.lang)
 

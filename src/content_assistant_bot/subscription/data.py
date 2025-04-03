@@ -28,7 +28,7 @@ def init_subscription_plans(db: Session) -> list[SubscriptionPlan]:
         SubscriptionPlan(
             name="Standard",
             description="Расширенный пакет с 300 постами",
-            price=Decimal("699.00"),
+            price=Decimal("799.00"),
             currency="RUB",
             credits=300,
             duration_in_days=30
@@ -36,7 +36,7 @@ def init_subscription_plans(db: Session) -> list[SubscriptionPlan]:
         SubscriptionPlan(
             name="Premium",
             description="Премиум пакет с 1000 постами",
-            price=Decimal("2699.00"),
+            price=Decimal("2199.00"),
             currency="RUB",
             credits=1000,
             duration_in_days=30
