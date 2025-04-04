@@ -182,7 +182,7 @@ def register_handlers(bot: TeleBot):
 
         # Prepare message text with post details
         message_text = (
-            f"<b>{title}</b>\n\n"
+            #f"<b>{title}</b>\n\n"
             f"{post.content}\n\n"
         )
 
