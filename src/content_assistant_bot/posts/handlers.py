@@ -106,7 +106,7 @@ def register_handlers(bot: TeleBot):
             markup = create_post_action_markup(user.lang, new_post.id)
             
             message_text = (
-                f"<b>{new_post.title}</b>\n\n"
+                #f"<b>{new_post.title}</b>\n\n"
                 f"{new_post.content}\n\n"
             )
             
@@ -523,7 +523,7 @@ def register_handlers(bot: TeleBot):
                     schedule_text = f"\n{strings[user.lang].scheduled_for}: {post.scheduled_time.strftime('%Y-%m-%d %H:%M')}"
 
                 message_text = (
-                    f"<b>{updated_post.title}</b>\n\n"
+                    #f"<b>{updated_post.title}</b>\n\n"
                     f"{updated_post.content}\n\n"
                 )
 
