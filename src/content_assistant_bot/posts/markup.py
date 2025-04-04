@@ -22,7 +22,7 @@ def create_cancel_button(lang: str) -> InlineKeyboardMarkup:
     """ Create a cancel button for the items menu """
     cancel_button = InlineKeyboardMarkup(row_width=1)
     cancel_button.add(
-        InlineKeyboardButton(strings[lang].cancel, callback_data="posts"),
+        InlineKeyboardButton(strings[lang].cancel, callback_data="menu"),
     )
     return cancel_button
 
@@ -57,7 +57,8 @@ def create_post_action_markup(lang: str, post_id: int) -> InlineKeyboardMarkup:
     markup.add(InlineKeyboardButton(strings[lang].publish_post, callback_data=f"publish_post_{post_id}"))
     markup.add(InlineKeyboardButton(strings[lang].schedule_post, callback_data=f"schedule_post_{post_id}"))
     markup.add(InlineKeyboardButton(strings[lang].edit_post, callback_data=f"edit_post_{post_id}"))
-    markup.add(InlineKeyboardButton(strings[lang].back_to_posts, callback_data="posts"))
+    markup.add(InlineKeyboardButton(strings[lang].delete_post, callback_data=f"delete_post_{post_id}"))
+    markup.add(InlineKeyboardButton(strings[lang].back_to_posts, callback_data="list_posts"))
     return markup
 
 

@@ -53,7 +53,6 @@ def update_style(db_session: Session, style_id: int, name: str, description: str
     style = db_session.query(Style).filter(Style.id == style_id).first()
     if style:
         style.name = name
-        style.description = description
         style.examples = examples
         style.updated_at = datetime.now()
         db_session.commit()
@@ -153,7 +152,7 @@ def generate_with_style(content: str, style_id: int, db_session: Session) -> str
     # Load the LLM model
     llm = LLM(config.app.llm, system_prompt=config.app.llm.system_prompt)
 
-    style_content = f"Описание стиля: {style.description}, Примеры: {style.examples}"
+    style_content = f"Примеры: {style.examples}"
     user_input = f"{style_content}\n\nИсходный текст: {content}"
 
     # Convert chat history to a list of Message objects using model_validate

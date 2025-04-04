@@ -12,6 +12,21 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def create_post(db_session: Session, title: str, content: str, owner_id: int, photo_id: Optional[str] = None) -> Post:
+    """ Create a new post """
+    post = Post(
+        title=title,
+        content=content,
+        owner_id=owner_id,
+        photo_id=photo_id,
+        created_at=datetime.now(),
+        updated_at=datetime.now()
+    )
+    db_session.add(post)
+    db_session.commit()
+    db_session.refresh(post)
+    return post
+
 # Post related functions
 def read_posts_by_owner(db_session: Session, owner_id: int, skip: int = 0, limit: int = 10):
     """ Get all posts by a specific owner """

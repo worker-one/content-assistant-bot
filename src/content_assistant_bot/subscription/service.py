@@ -49,7 +49,6 @@ def update_subscription_plan(
     db_session: Session,
     plan_id: int,
     name: Optional[str]=None,
-    description: Optional[str]=None,
     price: Optional[float]=None,
     currency: Optional[str]=None,
     duration_in_days: Optional[int]=None
@@ -58,8 +57,6 @@ def update_subscription_plan(
     if plan:
         if name is not None:
             plan.name = name
-        if description is not None:
-            plan.description = description
         if price is not None:
             plan.price = price
         if currency is not None:

@@ -251,7 +251,7 @@ def register_handlers(bot: TeleBot):
             concatenated_examples = "\n\n---\n\n".join(examples)
         
         data["state"].add_data(concatenated_examples=concatenated_examples)
-        
+
         data["state"].set(GenerationState.style_name)
         
         bot.edit_message_text(
@@ -304,6 +304,12 @@ def register_handlers(bot: TeleBot):
                     )
                     data["state"].set(GenerationState.menu)
                     return
+
+                # Send please wait message
+                bot.send_message(
+                    user.id,
+                    strings[user.lang].please_wait
+                )
 
                 # Generate content based on style
                 generated_content = generate_with_style(message.text, style_id, db_session)

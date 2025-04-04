@@ -17,7 +17,7 @@ from .markup import (
     create_post_scheduling_markup,
     create_posts_list_markup,
 )
-from .service import publish_post, read_post, read_posts_by_owner, update_post_content
+from .service import create_post, publish_post, read_post, read_posts_by_owner, update_post_content
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -41,6 +41,8 @@ class PostState(StatesGroup):
     schedule_post = State()
     schedule_custom = State()
     select_channel = State() 
+    create_post_title = State()
+    create_post_content = State()
 
 
 def register_handlers(bot: TeleBot):
@@ -48,7 +50,93 @@ def register_handlers(bot: TeleBot):
     logger.info("Registering item handlers")
 
     # Post management handlers
-    @bot.callback_query_handler(func=lambda call: call.data == "posts")
+    @bot.callback_query_handler(func=lambda call: call.data == "create")
+    def posts_menu(call: types.CallbackQuery, data: dict):
+        user = data["user"]
+        data["state"].set(PostState.create_post_title)
+        
+        bot.edit_message_text(
+            chat_id=user.id,
+            message_id=call.message.message_id,
+            text=strings[user.lang].enter_post_title,
+            reply_markup=create_cancel_button(user.lang)
+        )
+    
+    @bot.message_handler(state=PostState.create_post_title)
+    def process_post_title(message: types.Message, data: dict):
+        user = data["user"]
+        title = message.text
+        
+        # Store the title in state data
+        data["state"].add_data(post_title=title)
+        data["state"].set(PostState.create_post_content)
+        
+        bot.send_message(
+            chat_id=user.id,
+            text=strings[user.lang].enter_post_content,
+            reply_markup=create_cancel_button(user.lang)
+        )
+    
+    @bot.message_handler(content_types=['text', 'photo'], state=PostState.create_post_content)
+    def process_post_content(message: types.Message, data: dict):
+        user = data["user"]
+        
+        # Get title from state data
+        with data["state"].data() as data_items:
+            title = data_items.get("post_title")
+        
+        # Get content and photo if exists
+        content = message.text
+        photo_id = None
+        
+        if message.photo:
+            # Get the largest photo (last in array)
+            photo_id = message.photo[-1].file_id
+            # If caption exists, use it as content
+            content = message.caption or ""
+        
+        # Create new post
+        new_post = create_post(db_session, title, content, user.id, photo_id)
+        
+        if new_post:
+            # Send success message and show the new post
+            data["state"].set(PostState.view_post)
+            data["post_id"] = new_post.id
+            
+            markup = create_post_action_markup(user.lang, new_post.id)
+            
+            # Prepare post message
+            status_text = strings[user.lang].post_draft
+            
+            message_text = (
+                f"<b>{new_post.title}</b>\n\n"
+                f"{new_post.content}\n\n"
+                f"<i>{status_text}</i>"
+            )
+            
+            if photo_id:
+                bot.send_photo(
+                    chat_id=user.id,
+                    photo=photo_id,
+                    caption=message_text,
+                    reply_markup=markup,
+                    parse_mode="HTML"
+                )
+            else:
+                bot.send_message(
+                    chat_id=user.id,
+                    text=message_text,
+                    reply_markup=markup,
+                    parse_mode="HTML"
+                )
+        else:
+            bot.send_message(
+                chat_id=user.id,
+                text=strings[user.lang].post_creation_failed,
+                reply_markup=create_menu_markup(user.lang)
+            )
+    
+    @bot.callback_query_handler(func=lambda call: call.data == "list_posts")
     def my_posts(call: types.CallbackQuery, data: dict):
         user = data["user"]
         data["state"].set(PostState.my_posts)
@@ -64,8 +152,9 @@ def register_handlers(bot: TeleBot):
                 reply_markup=markup
             )
         else:
-            bot.send_message(
+            bot.edit_message_text(
                 chat_id=user.id,
+                message_id=call.message.message_id,
                 text=strings[user.lang].my_posts,
                 reply_markup=markup
             )
@@ -541,7 +630,7 @@ def register_handlers(bot: TeleBot):
                             reply_markup=create_cancel_button(user.lang)
                         )
 
-    @bot.callback_query_handler(func=lambda call: call.data.startswith("save_post_"))
+    @bot.callback_query_handler(func=lambda call: call.data.startswith("confirm_edit_post_"), state=PostState.edit_post)
     def handle_save_post(call: types.CallbackQuery, data: dict):
         user = data["user"]
         post_id = int(call.data.split("_")[2])
@@ -567,3 +656,32 @@ def register_handlers(bot: TeleBot):
         # Return to post view
         data["state"].add_data(post_id = post_id)
         view_post(call, data)
+
+    # handler for deleting a post
+    @bot.callback_query_handler(func=lambda call: call.data.startswith("delete_post_"))
+    def handle_delete_post(call: types.CallbackQuery, data: dict):
+        user = data["user"]
+        post_id = int(call.data.split("_")[2])
+        post = read_post(db_session, post_id)
+
+        if not post:
+            bot.answer_callback_query(
+                call.id,
+                text=strings[user.lang].post_not_found,
+                show_alert=True
+            )
+            return
+
+        # Delete the post
+        db_session.delete(post)
+        db_session.commit()
+
+        # Send confirmation message
+        bot.answer_callback_query(
+            call.id,
+            text=strings[user.lang].post_deleted,
+            show_alert=True
+        )
+
+        # Return to my posts
+        my_posts(call, data)

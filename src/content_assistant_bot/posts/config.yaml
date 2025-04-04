@@ -23,14 +23,20 @@ strings:
     post_published: "Опубликован"
     post_draft: "Черновик"
     scheduled_for: "Запланирован на"
+    post_saved: "Пост сохранен"
     
     # Post actions
+    create_new_post: "Создать новый пост"
     publish_post: "Опубликовать сейчас"
     schedule_post: "Запланировать на потом"
     edit_post: "Редактировать пост"
     delete_post: "Удалить пост"
+    post_deleted: "Пост успешно удален"
     back_to_posts: "Вернуться к постам"
     save_post: "Сохранить пост"
+    posts_menu_text: Выберите действие
+    enter_post_title: "Введите заголовок для вашего поста:"
+    enter_post_content: "Введите содержание вашего поста:"
     
     # Edit post
     what_to_edit: "Что бы вы хотели отредактировать?"
