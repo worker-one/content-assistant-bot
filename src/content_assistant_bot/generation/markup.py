@@ -1,11 +1,9 @@
 import logging
-import logging.config
 from pathlib import Path
 
 from omegaconf import OmegaConf
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from .models import Item
 
 # Load configuration
 CURRENT_DIR = Path(__file__).parent
@@ -17,33 +15,30 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def create_items_menu_markup(lang: str) -> InlineKeyboardMarkup:
-    """ Create the items menu markup """
-    markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton(strings[lang].create_item, callback_data="create_item"))
-    markup.add(InlineKeyboardButton(strings[lang].my_items, callback_data="my_items"))
-    markup.add(InlineKeyboardButton(strings[lang].back_to_menu, callback_data="menu"))
+
+def create_generation_menu_markup(lang):
+    """ Create markup for generation menu """
+    markup = InlineKeyboardMarkup(row_width=1)
+    markup.add(
+        InlineKeyboardButton(strings[lang].select_saved, callback_data="select_style"),
+        InlineKeyboardButton(strings[lang].create_style, callback_data="create_style"),
+        InlineKeyboardButton(strings[lang].back_to_menu, callback_data="menu")
+    )
     return markup
 
 
-def create_item_menu_markup(lang: str, item_id: int) -> InlineKeyboardMarkup:
-    """ Create the item menu markup """
-    markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton(strings[lang].delete_item, callback_data=f"delete_item_{item_id}"))
-    markup.add(InlineKeyboardButton(strings[lang].back_to_items, callback_data="my_items"))
-    markup.add(InlineKeyboardButton(strings[lang].back_to_menu, callback_data="menu"))
+def create_post_actions_markup(lang, post_id):
+    """ Create markup for post actions """
+    markup = InlineKeyboardMarkup(row_width=1)
+    markup.add(
+        #InlineKeyboardButton(strings[lang].edit_post, callback_data=f"edit_post_{post_id}"),
+        #InlineKeyboardButton(strings[lang].publish_post, callback_data=f"publish_post_{post_id}"),
+        #InlineKeyboardButton(strings[lang].schedule_post, callback_data=f"schedule_post_{post_id}"),
+        #InlineKeyboardButton(strings[lang].manual_edit, callback_data=f"manual_edit_{post_id}"),
+        InlineKeyboardButton(strings[lang].save_post, callback_data=f"save_post_{post_id}"),
+        InlineKeyboardButton(strings[lang].back, callback_data="generation_menu")
+    )
     return markup
-
-
-def create_items_list_markup(lang: str, items: list[Item]) -> InlineKeyboardMarkup:
-    """ Create the items menu markup """
-    markup = InlineKeyboardMarkup()
-    for item in items:
-        markup.add(InlineKeyboardButton(item.name, callback_data=f"view_item_{item.id}"))
-
-    markup.add(InlineKeyboardButton(strings[lang].back_to_menu, callback_data="menu"))
-    return markup
-
 
 def create_cancel_button(lang: str) -> InlineKeyboardMarkup:
     """ Create a cancel button for the items menu """

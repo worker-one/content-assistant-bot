@@ -54,8 +54,8 @@ def create_posts_list_markup(lang: str, posts: list[Post]) -> InlineKeyboardMark
 def create_post_action_markup(lang: str, post_id: int) -> InlineKeyboardMarkup:
     """ Create the post action markup """
     markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton(strings[lang].publish_post, callback_data=f"publish_post_{post_id}"))
-    markup.add(InlineKeyboardButton(strings[lang].schedule_post, callback_data=f"schedule_post_{post_id}"))
+    #markup.add(InlineKeyboardButton(strings[lang].publish_post, callback_data=f"publish_post_{post_id}"))
+    #markup.add(InlineKeyboardButton(strings[lang].schedule_post, callback_data=f"schedule_post_{post_id}"))
     markup.add(InlineKeyboardButton(strings[lang].edit_post, callback_data=f"edit_post_{post_id}"))
     markup.add(InlineKeyboardButton(strings[lang].delete_post, callback_data=f"delete_post_{post_id}"))
     markup.add(InlineKeyboardButton(strings[lang].back_to_posts, callback_data="list_posts"))

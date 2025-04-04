@@ -8,6 +8,11 @@ from telebot.states import State, StatesGroup
 
 from ..account import service as account_services
 from ..database.core import get_session
+from .markup import (
+    create_cancel_button,
+    create_generation_menu_markup,
+    create_post_actions_markup,
+)
 from .service import (
     create_post,
     create_style,
@@ -46,30 +51,6 @@ class GenerationState(StatesGroup):
     post_schedule = State()
     post_actions = State()
 
-
-def create_generation_menu_markup(lang):
-    """ Create markup for generation menu """
-    markup = types.InlineKeyboardMarkup(row_width=1)
-    markup.add(
-        types.InlineKeyboardButton(strings[lang].select_saved, callback_data="select_style"),
-        types.InlineKeyboardButton(strings[lang].create_style, callback_data="create_style"),
-        types.InlineKeyboardButton(strings[lang].back_to_menu, callback_data="menu")
-    )
-    return markup
-
-
-def create_post_actions_markup(lang, post_id):
-    """ Create markup for post actions """
-    markup = types.InlineKeyboardMarkup(row_width=1)
-    markup.add(
-        types.InlineKeyboardButton(strings[lang].edit_post, callback_data=f"edit_post_{post_id}"),
-        types.InlineKeyboardButton(strings[lang].publish_post, callback_data=f"publish_post_{post_id}"),
-        types.InlineKeyboardButton(strings[lang].schedule_post, callback_data=f"schedule_post_{post_id}"),
-        types.InlineKeyboardButton(strings[lang].manual_edit, callback_data=f"manual_edit_{post_id}"),
-        types.InlineKeyboardButton(strings[lang].save_post, callback_data=f"save_post_{post_id}"),
-        types.InlineKeyboardButton(strings[lang].back, callback_data="generation_menu")
-    )
-    return markup
 
 
 def create_style_list_markup(lang, styles):
@@ -492,7 +473,7 @@ def register_handlers(bot: TeleBot):
         # For saving, we need to add a title if it doesn't exist
         data["state"].add_data(post_id=post_id)
         data["state"].set(GenerationState.post_title)
-        
+
         bot.edit_message_text(
             chat_id=user.id,
             message_id=call.message.message_id,

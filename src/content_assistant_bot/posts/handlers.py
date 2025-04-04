@@ -105,13 +105,9 @@ def register_handlers(bot: TeleBot):
             
             markup = create_post_action_markup(user.lang, new_post.id)
             
-            # Prepare post message
-            status_text = strings[user.lang].post_draft
-            
             message_text = (
                 f"<b>{new_post.title}</b>\n\n"
                 f"{new_post.content}\n\n"
-                f"<i>{status_text}</i>"
             )
             
             if photo_id:
@@ -135,15 +131,15 @@ def register_handlers(bot: TeleBot):
                 text=strings[user.lang].post_creation_failed,
                 reply_markup=create_menu_markup(user.lang)
             )
-    
+
     @bot.callback_query_handler(func=lambda call: call.data == "list_posts")
     def my_posts(call: types.CallbackQuery, data: dict):
         user = data["user"]
         data["state"].set(PostState.my_posts)
-        
+
         posts = read_posts_by_owner(db_session, user.id)
         markup = create_posts_list_markup(user.lang, posts)
-        
+
         if not posts:
             bot.edit_message_text(
                 chat_id=user.id,
@@ -158,16 +154,16 @@ def register_handlers(bot: TeleBot):
                 text=strings[user.lang].my_posts,
                 reply_markup=markup
             )
-    
+
     @bot.callback_query_handler(func=lambda call: call.data.startswith("view_post_"))
     def view_post(call: types.CallbackQuery, data: dict):
         user = data["user"]
         post_id = int(call.data.split("_")[2])
         data["state"].set(PostState.view_post)
         data["post_id"] = post_id
-        
+
         post = read_post(db_session, post_id)
-        
+
         if not post:
             bot.edit_message_text(
                 chat_id=user.id,
@@ -176,25 +172,23 @@ def register_handlers(bot: TeleBot):
                 reply_markup=create_posts_list_markup(user.lang, read_posts_by_owner(db_session, user.id))
             )
             return
-        
+
         # Format post status info
-        status_text = strings[user.lang].post_published if post.is_published else strings[user.lang].post_draft
         schedule_text = ""
         if post.scheduled_time:
             schedule_text = f"\n{strings[user.lang].scheduled_for}: {post.scheduled_time.strftime('%Y-%m-%d %H:%M')}"
-        
+
         title = post.title if post.title else strings[user.lang].untitled_post
-        
+
         # Prepare message text with post details
         message_text = (
             f"<b>{title}</b>\n\n"
             f"{post.content}\n\n"
-            f"<i>{status_text}{schedule_text}</i>"
         )
 
         markup = create_post_action_markup(user.lang, post.id)
 
-        
+
         if post.photo_id:
             bot.send_photo(
                 chat_id=user.id,
@@ -213,7 +207,8 @@ def register_handlers(bot: TeleBot):
         # Set the state to view_post
         data["state"].set(PostState.view_post)
         data["post_id"] = post_id
-        
+
+
     @bot.callback_query_handler(func=lambda call: call.data.startswith("publish_post_"))
     def handle_publish_post(call: types.CallbackQuery, data: dict):
         user = data["user"]
@@ -233,7 +228,7 @@ def register_handlers(bot: TeleBot):
                 show_alert=True
             )
             return
-        
+
         # Create markup with user channels
         markup = types.InlineKeyboardMarkup(row_width=1)
         for channel in channels:
@@ -530,7 +525,6 @@ def register_handlers(bot: TeleBot):
                 message_text = (
                     f"<b>{updated_post.title}</b>\n\n"
                     f"{updated_post.content}\n\n"
-                    f"<i>{status_text}{schedule_text}</i>"
                 )
 
                 bot.send_message(
@@ -603,7 +597,6 @@ def register_handlers(bot: TeleBot):
                         message_text = (
                             f"<b>{title}</b>\n\n"
                             f"{updated_post.content}\n\n"
-                            f"<i>{status_text}{schedule_text}</i>"
                         )
 
                         if updated_post.photo_id:
