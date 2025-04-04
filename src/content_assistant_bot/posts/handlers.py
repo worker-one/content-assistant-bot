@@ -595,7 +595,7 @@ def register_handlers(bot: TeleBot):
                         title = updated_post.title if updated_post.title else strings[user.lang].untitled_post
 
                         message_text = (
-                            f"<b>{title}</b>\n\n"
+                            #f"<b>{title}</b>\n\n"
                             f"{updated_post.content}\n\n"
                         )
 
