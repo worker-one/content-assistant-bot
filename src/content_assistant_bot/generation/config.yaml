@@ -27,6 +27,11 @@ strings:
     style_created: "Стиль '{name}' успешно создан! ✅"
     style_not_found: "Стиль не найден."
     example_added: "Пример успешно добавлен к стилю!"
+    use_style: "Использовать стиль"
+    delete_style: "Удалить стиль"
+    style_name: "Название стиля"
+    style_examples: "Примеры стиля"
+    style_deleted: "Стиль успешно удален."
     done: "Готово"
     
     # Post-related strings

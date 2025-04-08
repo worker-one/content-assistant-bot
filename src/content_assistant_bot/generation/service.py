@@ -179,3 +179,13 @@ def edit_content(content: str) -> str:
     # This would be replaced with actual AI-based editing
     logger.info("Editing content to fix errors")
     return content
+
+
+def delete_style_by_id(db_session: Session, style_id: int) -> bool:
+    """ Delete a style by ID """
+    style = db_session.query(Style).filter(Style.id == style_id).first()
+    if style:
+        db_session.delete(style)
+        db_session.commit()
+        return True
+    return False

@@ -40,10 +40,28 @@ def create_post_actions_markup(lang, post_id):
     )
     return markup
 
-def create_cancel_button(lang: str) -> InlineKeyboardMarkup:
-    """ Create a cancel button for the items menu """
-    cancel_button = InlineKeyboardMarkup(row_width=1)
-    cancel_button.add(
-        InlineKeyboardButton(strings[lang].cancel, callback_data="item"),
+
+def create_style_list_markup(lang, styles):
+    """ Create markup with list of styles """
+    markup = InlineKeyboardMarkup(row_width=1)
+    for style in styles:
+        markup.add(InlineKeyboardButton(style.name, callback_data=f"view_style_{style.id}"))
+    markup.add(InlineKeyboardButton(strings[lang].back, callback_data="generation_menu"))
+    return markup
+
+def create_cancel_button(lang):
+    """ Create a cancel button """
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton(strings[lang].cancel, callback_data="generation_menu"))
+    return markup
+
+
+def create_style_options_markup(lang: str, style_id: int) -> InlineKeyboardMarkup:
+    """ Create options markup for a style (use or delete) """
+    markup = InlineKeyboardMarkup(row_width=1)
+    markup.add(
+        InlineKeyboardButton(strings[lang].use_style, callback_data=f"style_{style_id}"),
+        InlineKeyboardButton(strings[lang].delete_style, callback_data=f"delete_style_{style_id}"),
+        InlineKeyboardButton(strings[lang].back, callback_data="select_style")
     )
-    return cancel_button
+    return markup

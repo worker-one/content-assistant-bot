@@ -12,6 +12,8 @@ from .markup import (
     create_cancel_button,
     create_generation_menu_markup,
     create_post_actions_markup,
+    create_style_list_markup,
+    create_style_options_markup
 )
 from .service import (
     create_post,
@@ -24,6 +26,7 @@ from .service import (
     read_styles_by_owner,
     schedule_post,
     update_post,
+    delete_style
 )
 
 logger = logging.getLogger(__name__)
@@ -52,16 +55,6 @@ class GenerationState(StatesGroup):
     post_actions = State()
 
 
-
-def create_style_list_markup(lang, styles):
-    """ Create markup with list of styles """
-    markup = types.InlineKeyboardMarkup(row_width=1)
-    for style in styles:
-        markup.add(types.InlineKeyboardButton(style.name, callback_data=f"style_{style.id}"))
-    markup.add(types.InlineKeyboardButton(strings[lang].back, callback_data="generation_menu"))
-    return markup
-
-
 def create_post_list_markup(lang, posts):
     """ Create markup with list of posts """
     markup = types.InlineKeyboardMarkup(row_width=1)
@@ -69,13 +62,6 @@ def create_post_list_markup(lang, posts):
         title = post.title if post.title else post.content[:20] + "..."
         markup.add(types.InlineKeyboardButton(title, callback_data=f"post_{post.id}"))
     markup.add(types.InlineKeyboardButton(strings[lang].back, callback_data="generation_menu"))
-    return markup
-
-
-def create_cancel_button(lang):
-    """ Create a cancel button """
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton(strings[lang].cancel, callback_data="generation_menu"))
     return markup
 
 
@@ -111,6 +97,75 @@ def register_handlers(bot: TeleBot):
             reply_markup=markup
         )
 
+    @bot.callback_query_handler(func=lambda call: call.data.startswith("view_style_"))
+    def view_style(call: types.CallbackQuery, data: dict):
+        user = data["user"]
+        style_id = int(call.data.split("_")[2])
+        style = read_style(db_session, style_id)
+        
+        if not style:
+            bot.answer_callback_query(call.id, strings[user.lang].style_not_found)
+            return
+        
+        markup = create_style_options_markup(user.lang, style_id)
+        
+        # Show style details
+        style_description = f"{strings[user.lang].style_name}: {style.name}\n\n"
+        style_description += f"{strings[user.lang].style_examples}:\n{style.examples[:200]}..."
+        
+        bot.edit_message_text(
+            chat_id=user.id,
+            message_id=call.message.message_id,
+            text=style_description,
+            reply_markup=markup
+        )
+
+    @bot.callback_query_handler(func=lambda call: call.data.startswith("delete_style_"))
+    def delete_style_handler(call: types.CallbackQuery, data: dict):
+        user = data["user"]
+        style_id = int(call.data.split("_")[2])
+        style = read_style(db_session, style_id)
+
+        if not style:
+            bot.answer_callback_query(call.id, strings[user.lang].style_not_found)
+            return
+
+        # Check if the user owns the style
+        if style.owner_id != user.id:
+            bot.answer_callback_query(call.id, strings[user.lang].not_your_style)
+            return
+            
+        # Delete the style
+        success = delete_style(db_session, style_id)
+        
+        if success:
+            # Return to styles list
+            styles = read_styles_by_owner(db_session, user.id)
+            
+            if not styles:
+                markup = types.InlineKeyboardMarkup()
+                markup.add(types.InlineKeyboardButton(strings[user.lang].create_style, callback_data="create_style"))
+                markup.add(types.InlineKeyboardButton(strings[user.lang].back, callback_data="generation_menu"))
+                
+                bot.edit_message_text(
+                    chat_id=user.id,
+                    message_id=call.message.message_id,
+                    text=strings[user.lang].style_deleted + "\n" + strings[user.lang].no_styles,
+                    reply_markup=markup
+                )
+            else:
+                markup = create_style_list_markup(user.lang, styles)
+                
+                bot.edit_message_text(
+                    chat_id=user.id,
+                    message_id=call.message.message_id,
+                    text=strings[user.lang].style_deleted + "\n" + strings[user.lang].select_style,
+                    reply_markup=markup
+                )
+        else:
+            bot.answer_callback_query(call.id, strings[user.lang].style_delete_failed)
+
+    # Now modify the style selection handler to use view_style instead of directly using the style
     @bot.callback_query_handler(func=lambda call: call.data == "select_style")
     def select_style(call: types.CallbackQuery, data: dict):
         user = data["user"]
