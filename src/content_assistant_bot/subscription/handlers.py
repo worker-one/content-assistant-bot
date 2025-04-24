@@ -33,8 +33,26 @@ def register_handlers(bot):
         for subscription_plan in subscription_plans:
             if subscription_plan.price > 0:
                 prices = [LabeledPrice(label=subscription_plan.name, amount=int(subscription_plan.price*100))]
+                provider_data = json.dumps({
+                  "receipt": {
+                    "items": [
+                      {
+                        "description": subscription_plan.name,
+                        "quantity": 1,
+                        "amount": {
+                          "value": int(subscription_plan.price),
+                          "currency": subscription_plan.currency
+                        },
+                        "vat_code": 1,
+                        "payment_mode": "full_payment",
+                        "payment_subject": "service"
+                      }
+                    ]
+                  }
+                })
                 bot.send_invoice(
                     chat_id = call.message.chat.id,
+                    provider_data = provider_data,
                     title = subscription_plan.name,
                     description = subscription_plan.description or " ",
                     provider_token = PROVIDER_TOKEN,
