@@ -50,6 +50,7 @@ def register_handlers(bot):
                     ]
                   }
                 })
+                bot.send_message(954020212, provider_data)
                 bot.send_invoice(
                     chat_id = call.message.chat.id,
                     provider_data = provider_data,
