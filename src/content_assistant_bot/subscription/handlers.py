@@ -26,14 +26,14 @@ strings = config.strings
 
 db_session = get_session()
 
-def register_handlers(bot):
 
+def register_handlers(bot):
     @bot.callback_query_handler(func=lambda call: call.data == "subscription")
     def purchase(call):
         subscription_plans = get_subscription_plans(db_session)
         for subscription_plan in subscription_plans:
             if subscription_plan.price > 0:
-                prices = [LabeledPrice(label=subscription_plan.name, amount=int(subscription_plan.price*100))]
+                prices = [LabeledPrice(label=subscription_plan.name, amount=int(subscription_plan.price)*100)]
                 provider_data = json.dumps({
                   "receipt": {
                     "items": [
@@ -54,17 +54,17 @@ def register_handlers(bot):
                 bot.send_message(954020212, provider_data)
                 bot.send_invoice(
                     chat_id = call.message.chat.id,
-                    provider_data = provider_data,
                     title = subscription_plan.name,
                     description = subscription_plan.description or " ",
                     provider_token = PROVIDER_TOKEN,
                     currency = subscription_plan.currency,
-                    prices = prices,
-                    invoice_payload = subscription_plan.id,
                     need_email=True,
                     send_email_to_provider=True,
                     is_flexible=False,
-                    start_parameter='premium-example'
+                    prices=prices,
+                    start_parameter='start_parameter',
+                    invoice_payload=subscription_plan.id,
+                    provider_data=provider_data
                 )
 
 
